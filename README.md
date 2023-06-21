@@ -103,3 +103,5 @@ ggspider(mtcars_gr, axis_name_offset = 0.15, background_color = "beige", fill_op
         text = element_text(family = "Roboto Condensed", face = "bold"))
 ```
 
+![prettty_spider](https://github.com/Ringomed/ggvanced/assets/60142390/e4f65828-dc98-4abc-8383-925e17614fd8)
+
