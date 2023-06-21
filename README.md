@@ -1,4 +1,8 @@
 # ggvanced
+
+![prettty_spider](https://github.com/Ringomed/ggvanced/assets/60142390/e4f65828-dc98-4abc-8383-925e17614fd8)
+
+
 An R package for creating advanced multivariable plots such as spider/radar charts and parallel plots. The visualizations are created on top of the `ggplot2` package. The beauty of the `ggplot2` package is the underlying grammar of graphics, allowing for creation of graphs by stacking multiple layers on top of one another. This powerful concept lets us create essentially any visualization, as long as we know how to code it.
 
 The `ggvanced` package aims to provide a fast way to compare observations across multiple categories at once. To be precise, it contains functions for creation of spider charts and parallel charts. One might think that these can already be obtained using other packages such as `fsmb` and `ggradar` for radar charts and `ggally` for parallel plots. However, none of those gives the ability to simultaneously visualize the range of values for each presented variable.
@@ -72,5 +76,30 @@ ggparallel(iris_summary)
 ```
 ![image](https://github.com/Ringomed/ggvanced/assets/60142390/86439275-edb4-4070-bbb5-e5450ec2d690)
 
+### Making charts prettier
 
+The above charts are just barebone version. Of course, they can be “pimped up” just like any other ggplot2 chart. Below is an example of a ggvanced spider chart after a couple of alterations.
+
+```{r}
+library(sysfonts)
+library(showtext)
+
+sysfonts::font_add_google("Roboto Condensed")
+showtext_auto()
+
+mtcars_gr <- mtcars %>%
+  tibble::rownames_to_column(var = "group") %>%
+  tibble::as_tibble() %>%
+  tail(3) %>%
+  rename("Miles per Gallon" = mpg, "Cylinders" = cyl,
+         "Displacement" = disp, "Horsepower" = hp,
+         "Rear axle\n ratio" = drat, "Weight" = wt) %>%
+  dplyr::select(1:7)
+
+ggspider(mtcars_gr, axis_name_offset = 0.15, background_color = "beige", fill_opacity = 0.15) +
+  labs(col = "Car name", title = "Comparing Car Properties") +
+  theme(plot.title = element_text(hjust = 0.475, face = "bold"),
+        legend.title = element_text(face = "bold"),
+        text = element_text(family = "Roboto Condensed", face = "bold"))
+```
 
