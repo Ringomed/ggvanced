@@ -7,7 +7,7 @@ An R package for creating advanced multivariable plots such as spider/radar char
 
 The `ggvanced` package aims to provide a fast way to compare observations across multiple categories at once. To be precise, it contains functions for creation of spider charts and parallel charts. One might think that these can already be obtained using other packages such as `fsmb` and `ggradar` for radar charts and `ggally` for parallel plots. However, none of those gives the ability to simultaneously visualize the range of values for each presented variable.
 
-The package can be installed using the `devtools::install_github("Ringomed/ggvanced")` command in R and calling `library(ggvanced)` afterwards.
+The package can be installed using the `devtools::install_github("Ringomed/ggvanced")` command in R and calling `library(ggvanced)` afterwards. There is also a [post on Medium](https://medium.com/towards-data-science/ggvanced-a-package-for-generating-advanced-data-visualizations-on-top-of-the-ggplot2-package-2a935763a4b) showcasing the package functions if you prefer that outlet.
 
 ## Examples
 
