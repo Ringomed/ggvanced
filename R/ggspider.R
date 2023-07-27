@@ -46,7 +46,11 @@ ggspider <- function(p_data,
                      fill_opacity = 0.05,
                      central_distance = 0.2,
                      axis_name_offset = 0.2,
-                     digit_rounding = 2
+                     digit_rounding = 2,
+                     axis_label_font_size = NULL,
+                     axis_label_font_face = NULL,
+                     axis_name_font_size = NULL,
+                     axis_name_font_face = NULL
 ){
 
   legend_title <- names(p_data)[[1]]
@@ -116,20 +120,20 @@ ggspider <- function(p_data,
     {if(scaled == TRUE){
       ggplot2::geom_text(data = labels_data %>% dplyr::filter(parameter == labels_data$parameter[[1]]), ggplot2::aes(x, y, label = r), alpha = 0.65,
                          family = theme_get()$text[["family"]],
-                         size = theme_get()$text[["size"]]/2.75,
-                         fontface ="plain")
+                         size = ifelse(is.null(axis_label_font_size), theme_get()$text[["size"]]/2.75, axis_label_font_size),
+                         fontface = ifelse(is.null(axis_label_font_face), "plain", axis_label_font_face))
     }
       else{
         ggplot2::geom_text(data = labels_data, ggplot2::aes(x, y, label = round(value, digit_rounding)), alpha = 0.65,
                            family = theme_get()$text[["family"]],
-                           size = theme_get()$text[["size"]]/2.75,
-                           fontface ="plain")
+                           size = ifelse(is.null(axis_label_font_size), theme_get()$text[["size"]]/2.75, axis_label_font_size),
+                           fontface = ifelse(is.null(axis_label_font_face), "plain", axis_label_font_face))
       }
     } +
     ggplot2::geom_text(data = text_coords(1 + central_distance + axis_name_offset), ggplot2::aes(x, y), label = labels_data$parameter[1:(ncol(p_data)-1)],
                        family = theme_get()$text[["family"]],
-                       size = theme_get()$text[["size"]]/2.75,
-                       fontface ="plain") +
+                       size = ifelse(is.null(axis_name_font_size), theme_get()$text[["size"]]/2.75, axis_name_font_size),
+                       fontface = ifelse(is.null(axis_name_font_face), "plain", axis_name_font_face)) +
     ggplot2::labs(col = legend_title) +
     ggplot2::theme(legend.position = "bottom",
                    legend.text = ggplot2::element_text(size = 12),
