@@ -14,6 +14,10 @@
 #' @param central_distance The offset from the center of the radar chart. Defaults to 0.2.
 #' @param axis_name_offset The axis name offset from the axis. Defaults to 0.2.
 #' @param digit_rounding To how many digits are the numbers rounded. Defaults to 2.
+#' @param axis_label_font_size Font size for the axis labels.
+#' @param axis_label_font_face Font face for the axis labels.
+#' @param axis_name_font_size Font size for the axis names.
+#' @param axis_name_font_face Font face for the axis names.
 #' @returns A ggplot chart.
 #' @export
 #' @examples
