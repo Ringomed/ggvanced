@@ -8,7 +8,9 @@
 #' @param scaled Whether to display a single axis with scaled data or
 #' individual axis (a radar or spider chart). Defaults to FALSE.
 #' @param draw_axis Whether to draw variable axis or not. Defaults to TRUE.
-#' @param subset Names of row identifiers to plot as a subset of data, but with axis range specified using the full dataset. Useful when trying to compare subsets of data.
+#' @param n_labels How many labels to use per axis. Defaults to 5.
+#' @param subset Names of row identifiers to plot as a subset of data, 
+#' but with axis range specified using the full dataset. Useful when trying to compare subsets of data.
 #' @param background_color The background color of the chart. Defaults to "gray 99".
 #' @param area_fill Whether or not to fill the shapes made by connecting data points. Defaults to TRUE.
 #' @param fill_opacity How opaque are the shape fills. Defaults to 0.05.
@@ -46,6 +48,7 @@ ggspider <- function(p_data,
                      polygon = TRUE,
                      scaled = FALSE,
                      draw_axis = TRUE,
+                     n_labels = 5,
                      subset = NULL,
                      background_color = "gray99",
                      area_fill = TRUE,
@@ -89,8 +92,8 @@ ggspider <- function(p_data,
 
   text_data <- p_data %>%
     dplyr::select(-group) %>%
-    purrr::map_df(~ min(.) + (max(.) - min(.)) * seq(0, 1, 0.25)) %>%
-    dplyr::mutate(r = seq(0, 1, 0.25)) %>%
+    purrr::map_df(~ min(.) + (max(.) - min(.)) * seq(0, 1, 1/(n_labels - 1))) %>%
+    dplyr::mutate(r = seq(0, 1, 1/(n_labels - 1))) %>%
     tidyr::pivot_longer(-r, names_to = "parameter", values_to = "value")
 
   text_coords <- function(r, n_axis = ncol(p_data) - 1){
@@ -101,7 +104,7 @@ ggspider <- function(p_data,
     tibble::tibble(x, y, r = r - central_distance)
   }
 
-  labels_data <- purrr::map_df(seq(0, 1, 0.25) + central_distance, text_coords) %>%
+  labels_data <- purrr::map_df(seq(0, 1, 1/(n_labels - 1)) + central_distance, text_coords) %>%
     dplyr::bind_cols(text_data %>% dplyr::select(-r))
 
 
