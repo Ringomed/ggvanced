@@ -10,12 +10,18 @@ ggspider(
   polygon = TRUE,
   scaled = FALSE,
   draw_axis = TRUE,
+  n_labels = 5,
+  subset = NULL,
   background_color = "gray99",
   area_fill = TRUE,
   fill_opacity = 0.05,
   central_distance = 0.2,
   axis_name_offset = 0.2,
-  digit_rounding = 2
+  digit_rounding = 2,
+  axis_label_font_size = NULL,
+  axis_label_font_face = NULL,
+  axis_name_font_size = NULL,
+  axis_name_font_face = NULL
 )
 }
 \arguments{
@@ -30,6 +36,11 @@ individual axis (a radar or spider chart). Defaults to FALSE.}
 
 \item{draw_axis}{Whether to draw variable axis or not. Defaults to TRUE.}
 
+\item{n_labels}{How many labels to use per axis. Defaults to 5.}
+
+\item{subset}{Names of row identifiers to plot as a subset of data, 
+but with axis range specified using the full dataset. Useful when trying to compare subsets of data.}
+
 \item{background_color}{The background color of the chart. Defaults to "gray 99".}
 
 \item{area_fill}{Whether or not to fill the shapes made by connecting data points. Defaults to TRUE.}
@@ -41,6 +52,14 @@ individual axis (a radar or spider chart). Defaults to FALSE.}
 \item{axis_name_offset}{The axis name offset from the axis. Defaults to 0.2.}
 
 \item{digit_rounding}{To how many digits are the numbers rounded. Defaults to 2.}
+
+\item{axis_label_font_size}{Font size for the axis labels.}
+
+\item{axis_label_font_face}{Font face for the axis labels.}
+
+\item{axis_name_font_size}{Font size for the axis names.}
+
+\item{axis_name_font_face}{Font face for the axis names.}
 }
 \value{
 A ggplot chart.
