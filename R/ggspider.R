@@ -8,6 +8,7 @@
 #' @param scaled Whether to display a single axis with scaled data or
 #' individual axis (a radar or spider chart). Defaults to FALSE.
 #' @param draw_axis Whether to draw variable axis or not. Defaults to TRUE.
+#' @param subset Names of row identifiers to plot as a subset of data, but with axis range specified using the full dataset. Useful when trying to compare subsets of data.
 #' @param background_color The background color of the chart. Defaults to "gray 99".
 #' @param area_fill Whether or not to fill the shapes made by connecting data points. Defaults to TRUE.
 #' @param fill_opacity How opaque are the shape fills. Defaults to 0.05.
@@ -45,6 +46,7 @@ ggspider <- function(p_data,
                      polygon = TRUE,
                      scaled = FALSE,
                      draw_axis = TRUE,
+                     subset = NULL,
                      background_color = "gray99",
                      area_fill = TRUE,
                      fill_opacity = 0.05,
@@ -115,6 +117,8 @@ ggspider <- function(p_data,
     dplyr::group_by(group) %>%
     dplyr::mutate(coords = rescaled_coords(value + central_distance, ncol(p_data) - 1)) %>%
     tidyr::unnest(cols = c(coords))
+
+  rescaled_data <- if(is.null(subset))  rescaled_data else rescaled_data %>% filter(group %in% subset)
 
   step_1 +
     {if(draw_axis == TRUE) ggplot2::geom_line(data = axis_coords(ncol(p_data) - 1), ggplot2::aes(x, y, group = id), alpha = 0.3)} +
