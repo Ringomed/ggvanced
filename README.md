@@ -105,3 +105,11 @@ ggspider(mtcars_gr, axis_name_offset = 0.15, background_color = "beige", fill_op
 
 ![prettty_spider](https://github.com/Ringomed/ggvanced/assets/60142390/e4f65828-dc98-4abc-8383-925e17614fd8)
 
+### Other examples
+
+Spotify Top Danceability:
+The code and notebook with additional context can be found at https://app.datacamp.com/workspace/w/693b78f1-5293-451e-a26e-ea5806b03b77/edit.
+![image](https://github.com/Ringomed/ggvanced/assets/60142390/b1719d05-0c98-48f0-9f51-ae5ef3967bb8)
+
+
+
