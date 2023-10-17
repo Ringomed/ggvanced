@@ -11,7 +11,7 @@ The package can be installed using the `devtools::install_github("Ringomed/ggvan
 
 ## Examples
 
-### `ggspider()` 
+## `ggspider()` 
 
 The `ggspider()` function creates spider charts which either a single shared axis scaled to a [0,1] range, or a separate axis with real values displayed for every displayed category. Let's test the function on a couple of examples. First, we have to format the data so that the first column contains the group identifier, and other columns the descriptory variables. We will use the built-in `mtcars` and `iris` datasets.
 
@@ -58,25 +58,57 @@ ggspider(iris_summary, polygon = FALSE)
 ```
 ![image](https://github.com/Ringomed/ggvanced/assets/60142390/96069519-c062-4e8a-876a-98e082927a15)
 
+## The `subset` argument
+
+Sometimes, we want to retaining the scale from all records, but display only a subset of data. This is enabled through the subset argument, which specifies the names
+of groups to be displayed.
+
+```{r}
+ggspider(mtcars_summary, subset = c("Ferrari Dino", "Volvo 142E"))
+```
+![image](https://github.com/Ringomed/ggvanced/assets/60142390/5d988e8f-2c1e-4c3c-bffc-3b6ec8570091)
+
+## Adding confidence intervals
+
+In order to more precisely compare group differences, we might want to disply confidence intervals alongside the means. This can be achieved by specifiying the data frame with the confidence interval
+data using the `ci_data` argument. In the bottom example, I specified symmetrical confidence intervals, but, of course, this does not have to be the case.
+
+```{r}
+iris_summary_ci <- iris %>%
+    dplyr::group_by(Species) %>%
+    dplyr::summarise(across(everything(), ~ 1.97*sd(.)/sqrt(n())))
+
+iris_ci <- iris_summary %>% tidyr::pivot_longer(-1, names_to = "parameter", values_to = "mean") %>%
+    dplyr::left_join(iris_summary_ci %>% pivot_longer(-1, names_to = "parameter", values_to = "ci")) %>%
+    dplyr::mutate(min = mean - ci, max = mean + ci) %>%
+    select(-mean, -ci)
+
+iris_ci
+```
+![image](https://github.com/Ringomed/ggvanced/assets/60142390/7d40cfa6-c380-48aa-ad59-cd90a334c510)
+
+```{r}
+ggspider(iris_summary, ci_data = iris_ci)
+```
+![image](https://github.com/Ringomed/ggvanced/assets/60142390/07699170-1b78-4a40-a652-4846cc08478d)
 
 The other arguments are more aesthetic in nature, and cover aspects such as font size, position of the labels and so on. For mire details, refer to the function documentation.
 
-### `ggparallel()`
+## `ggparallel()`
 
 Although I prefer spider charts from an aesthetic viewpoint, parallel charts can make it easier to spot trends across variables. This is especially true when there are many variables or observations in the dataset.
 
 ```{r}
 ggparallel(mtcars_summary)
 ```
-![image](https://github.com/Ringomed/ggvanced/assets/60142390/7961a8bb-6344-41d6-9d63-610d05eef0b6)
-
+<img src="https://github.com/Ringomed/ggvanced/assets/60142390/7961a8bb-6344-41d6-9d63-610d05eef0b6" width=100% height=100%>
 
 ```{r}
 ggparallel(iris_summary)
 ```
 ![image](https://github.com/Ringomed/ggvanced/assets/60142390/86439275-edb4-4070-bbb5-e5450ec2d690)
 
-### Making charts prettier
+## Making charts prettier
 
 The above charts are just barebone version. Of course, they can be “pimped up” just like any other ggplot2 chart. Below is an example of a ggvanced spider chart after a couple of alterations.
 
@@ -105,7 +137,7 @@ ggspider(mtcars_gr, axis_name_offset = 0.15, background_color = "beige", fill_op
 
 ![prettty_spider](https://github.com/Ringomed/ggvanced/assets/60142390/e4f65828-dc98-4abc-8383-925e17614fd8)
 
-### Other examples
+## Other examples
 
 Spotify Top Danceability:
 The code and notebook with additional context can be found at https://app.datacamp.com/workspace/w/693b78f1-5293-451e-a26e-ea5806b03b77/edit.
