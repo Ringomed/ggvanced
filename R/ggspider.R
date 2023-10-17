@@ -4,12 +4,15 @@
 #' @param p_data A data frame containing plotting data.
 #' with the first column containing the group/observation names,
 #' and the other columns being descriptory variables for each group/observation.
+#' @param ci_data A data frame confidence interval data containing four columns.
+#' The first column specifies the group, the second the feature, and the third and fourth left and
+#' right confidence interval borders, respectively. See the vignette for an example. Defaults to NULL.
 #' @param polygon Whether to use circles or polygons as the background. Defaults to TRUE.
 #' @param scaled Whether to display a single axis with scaled data or
 #' individual axis (a radar or spider chart). Defaults to FALSE.
 #' @param draw_axis Whether to draw variable axis or not. Defaults to TRUE.
 #' @param n_labels How many labels to use per axis. Defaults to 5.
-#' @param subset Names of row identifiers to plot as a subset of data, 
+#' @param subset Names of row identifiers to plot as a subset of data,
 #' but with axis range specified using the full dataset. Useful when trying to compare subsets of data.
 #' @param background_color The background color of the chart. Defaults to "gray 99".
 #' @param area_fill Whether or not to fill the shapes made by connecting data points. Defaults to TRUE.
@@ -45,6 +48,7 @@
 #' ggspider(iris_summary)
 
 ggspider <- function(p_data,
+                     ci_data = NULL,
                      polygon = TRUE,
                      scaled = FALSE,
                      draw_axis = TRUE,
@@ -64,6 +68,10 @@ ggspider <- function(p_data,
 
   legend_title <- names(p_data)[[1]]
   p_data <- p_data %>% dplyr::rename(group = 1) %>% dplyr::mutate(group = factor(group))
+
+  if(!is.null(ci_data)){
+    ci_data <- ci_data %>% rename(group = 1, parameter = 2)
+  }
 
   circle_coords <- function(r, n_axis = ifelse(polygon == TRUE, ncol(p_data) - 1, 100)){
     fi <- seq(0, 2*pi, (1/n_axis)*2*pi) + pi/2
@@ -113,8 +121,56 @@ ggspider <- function(p_data,
     tibble::tibble(r, fi) %>% dplyr::mutate(x = r*cos(fi), y = r*sin(fi)) %>% dplyr::select(-fi)
   }
 
-  rescaled_data <- p_data %>%
-    dplyr::mutate(across(-group, scales::rescale)) %>%
+  if(!is.null(ci_data)){
+    pdata_long_rescaled <- ci_data %>%
+      select(group, parameter, y = min) %>%
+      mutate(measure = "min") %>%
+      bind_rows( ci_data %>%
+                   select(group, parameter, y = max) %>%
+                   mutate(measure = "max")) %>%
+      bind_rows(p_data %>%
+                  tidyr::pivot_longer(-1, names_to = "parameter", values_to = "mean") %>%
+                  select(group, parameter, y = mean) %>%
+                  mutate(measure = "mean")) %>%
+      group_by(parameter) %>%
+      dplyr::mutate(y = scales::rescale(y))
+
+    rescaled_min <- pdata_long_rescaled %>% filter(measure == "min") %>%
+      select(-measure) %>%
+      pivot_wider(names_from = "parameter", values_from = "y") %>%
+      dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
+      tidyr::pivot_longer(-group, names_to = "parameter", values_to = "value") %>%
+      dplyr::group_by(group) %>%
+      dplyr::mutate(coords = rescaled_coords(value + central_distance, ncol(p_data) - 1)) %>%
+      tidyr::unnest(cols = c(coords)) %>%
+      dplyr::select(group, parameter, xmin = x, ymin = y)
+
+    rescaled_max <- pdata_long_rescaled %>% filter(measure == "max") %>%
+      select(-measure) %>%
+      pivot_wider(names_from = "parameter", values_from = "y") %>%
+      dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
+      tidyr::pivot_longer(-group, names_to = "parameter", values_to = "value") %>%
+      dplyr::group_by(group) %>%
+      dplyr::mutate(coords = rescaled_coords(value + central_distance, ncol(p_data) - 1)) %>%
+      tidyr::unnest(cols = c(coords)) %>%
+      dplyr::select(group, parameter, xmax = x, ymax = y)
+
+    rescaled_ci <- rescaled_min %>% dplyr::left_join(rescaled_max, by = dplyr::join_by(group, parameter))
+
+    rescaled_ci_alt <- rescaled_min %>% rename(x = xmin, y = ymin) %>% dplyr::bind_rows(rescaled_max %>% rename(x = xmax, y = ymax))
+  }
+  else{
+    pdata_long_rescaled <- p_data %>%
+                  tidyr::pivot_longer(-1, names_to = "parameter", values_to = "mean") %>%
+                  select(group, parameter, y = mean) %>%
+                  mutate(measure = "mean") %>%
+      group_by(parameter) %>%
+      dplyr::mutate(y = scales::rescale(y))
+  }
+
+  rescaled_data <- pdata_long_rescaled %>% filter(measure == "mean") %>%
+    select(-measure) %>%
+    pivot_wider(names_from = "parameter", values_from = "y") %>%
     dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
     tidyr::pivot_longer(-group, names_to = "parameter", values_to = "value") %>%
     dplyr::group_by(group) %>%
@@ -125,7 +181,12 @@ ggspider <- function(p_data,
 
   step_1 +
     {if(draw_axis == TRUE) ggplot2::geom_line(data = axis_coords(ncol(p_data) - 1), ggplot2::aes(x, y, group = id), alpha = 0.3)} +
-    ggplot2::geom_point(data = rescaled_data, ggplot2::aes(x, y, group = group, col = group), size = 3) +
+    {if(!is.null(ci_data)) ggplot2::geom_segment(data = rescaled_ci,
+                          ggplot2::aes(x = xmin, y = ymin, xend = xmax, yend = ymax, col = group, lwd = 1),
+                          alpha = 0.5, lineend = "square", show.legend = FALSE,
+                          arrow = arrow(ends = "both", angle = 90, length = unit(.1,"cm")))} +
+    scale_linewidth(range = c(0, 4)) +
+    ggplot2::geom_point(data = rescaled_data, ggplot2::aes(x, y, group = group, col = group), size = 2, stroke = 2) +
     ggplot2::geom_path(data = rescaled_data, ggplot2::aes(x, y, group = group, col = group), size = 1) +
     {if(area_fill == TRUE) ggplot2::geom_polygon(data = rescaled_data, ggplot2::aes(x, y, group = group, col = group, fill = group), size = 1, alpha = fill_opacity, show.legend = FALSE)} +
     {if(scaled == TRUE){
