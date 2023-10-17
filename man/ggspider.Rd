@@ -7,6 +7,7 @@ or multiple axis with real values displayed for each variable (spider chart).}
 \usage{
 ggspider(
   p_data,
+  ci_data = NULL,
   polygon = TRUE,
   scaled = FALSE,
   draw_axis = TRUE,
@@ -29,6 +30,10 @@ ggspider(
 with the first column containing the group/observation names,
 and the other columns being descriptory variables for each group/observation.}
 
+\item{ci_data}{A data frame confidence interval data containing four columns.
+The first column specifies the group, the second the feature, and the third and fourth left and
+right confidence interval borders, respectively. See the vignette for an example. Defaults to NULL.}
+
 \item{polygon}{Whether to use circles or polygons as the background. Defaults to TRUE.}
 
 \item{scaled}{Whether to display a single axis with scaled data or
@@ -38,7 +43,7 @@ individual axis (a radar or spider chart). Defaults to FALSE.}
 
 \item{n_labels}{How many labels to use per axis. Defaults to 5.}
 
-\item{subset}{Names of row identifiers to plot as a subset of data, 
+\item{subset}{Names of row identifiers to plot as a subset of data,
 but with axis range specified using the full dataset. Useful when trying to compare subsets of data.}
 
 \item{background_color}{The background color of the chart. Defaults to "gray 99".}
