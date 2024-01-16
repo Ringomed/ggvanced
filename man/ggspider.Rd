@@ -2,7 +2,7 @@
 % Please edit documentation in R/ggspider.R
 \name{ggspider}
 \alias{ggspider}
-\title{A function for generating radar plots with a shared scaled axis,
+\title{A function for generating radar/spider charts with a shared scaled axis,
 or multiple axis with real values displayed for each variable (spider chart).}
 \usage{
 ggspider(
@@ -13,6 +13,7 @@ ggspider(
   draw_axis = TRUE,
   n_labels = 5,
   subset = NULL,
+  reorder_axis = NULL,
   background_color = "gray99",
   area_fill = TRUE,
   fill_opacity = 0.05,
@@ -46,6 +47,8 @@ individual axis (a radar or spider chart). Defaults to FALSE.}
 \item{subset}{Names of row identifiers to plot as a subset of data,
 but with axis range specified using the full dataset. Useful when trying to compare subsets of data.}
 
+\item{reorder_axis}{Names of features (columns) for which to reverse axis order from default min-max to max-min. Defaults to NULL.}
+
 \item{background_color}{The background color of the chart. Defaults to "gray 99".}
 
 \item{area_fill}{Whether or not to fill the shapes made by connecting data points. Defaults to TRUE.}
@@ -67,10 +70,10 @@ but with axis range specified using the full dataset. Useful when trying to comp
 \item{axis_name_font_face}{Font face for the axis names.}
 }
 \value{
-A ggplot chart.
+A ggplot based spider/radar chart.
 }
 \description{
-A function for generating radar plots with a shared scaled axis,
+A function for generating radar/spider charts with a shared scaled axis,
 or multiple axis with real values displayed for each variable (spider chart).
 }
 \examples{
@@ -78,7 +81,7 @@ mtcars_gr <- mtcars \%>\%
  tibble::rownames_to_column(var = "group") \%>\%
  tibble::as_tibble() \%>\%
  tail(3) \%>\%
-dplyr::select(1:7)
+ dplyr::select(1:7)
 
 ggspider(mtcars_gr, polygon = TRUE)
 
@@ -88,9 +91,26 @@ ggspider(mtcars_gr, polygon = TRUE, scaled = TRUE)
 
 ggspider(mtcars_gr, polygon = FALSE, scaled = TRUE)
 
+ggspider(mtcars_gr, reorder_axis = c("mpg", "hp"))
+
 iris_summary <- iris \%>\%
  dplyr::group_by(Species) \%>\%
  dplyr::summarise(across(everything(), mean))
 
 ggspider(iris_summary)
+ggspider(iris_summary, reorder_axis = c("Sepal.Length"))
+
+iris_summary_ci <- iris \%>\%
+ dplyr::group_by(Species) \%>\%
+ dplyr::summarise(across(everything(), ~ 1.97*sd(.)/sqrt(n())))
+
+iris_ci <- iris_summary \%>\%
+ tidyr::pivot_longer(-1, names_to = "parameter", values_to = "mean") \%>\%
+ dplyr::left_join(iris_summary_ci \%>\%
+ tidyr::pivot_longer(-1, names_to = "parameter", values_to = "ci")) \%>\%
+ dplyr::mutate(min = mean - ci, max = mean + ci) \%>\%
+ dplyr::select(-mean, -ci)
+
+ggspider(iris_summary, ci_data = iris_ci)
+ggspider(iris_summary, ci_data = iris_ci, reorder_axis = c("Sepal.Length"))
 }
