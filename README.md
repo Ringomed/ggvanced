@@ -85,12 +85,12 @@ iris_ci <- iris_summary %>% tidyr::pivot_longer(-1, names_to = "parameter", valu
 
 iris_ci
 ```
-![image](https://github.com/Ringomed/ggvanced/assets/60142390/7d40cfa6-c380-48aa-ad59-cd90a334c510)
 
 ```{r}
 ggspider(iris_summary, ci_data = iris_ci)
 ```
-![image](https://github.com/Ringomed/ggvanced/assets/60142390/07699170-1b78-4a40-a652-4846cc08478d)
+
+<img src="https://github.com/Ringomed/ggvanced/assets/60142390/307651b9-adaa-44f9-ab59-6a95a5e755c0" width="80%" height="80%">
 
 The other arguments are more aesthetic in nature, and cover aspects such as font size, position of the labels and so on. For mire details, refer to the function documentation.
 
