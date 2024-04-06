@@ -14,7 +14,7 @@ The package can be installed using the `devtools::install_github("Ringomed/ggvan
 
 ## `ggspider()` 
 
-The `ggspider()` function creates spider charts which either a single shared axis scaled to a [0,1] range, or a separate axis with real values displayed for every displayed category. Let's test the function on a couple of examples. First, we have to format the data so that the first column contains the group identifier, and other columns the descriptory variables. We will use the built-in `mtcars` and `iris` datasets.
+The `ggspider()` function creates spider charts with either a single shared axis scaled to a [0,1] range, or a separate axis with real values displayed for every displayed category. Let's test the function on a couple of examples. First, we have to format the data so that the first column contains the group identifier, and other columns the descriptory variables. We will use the built-in `mtcars` and `iris` datasets.
 
 ```{r}
 library(tidyverse)
@@ -68,7 +68,7 @@ ggspider(iris_summary, polygon = FALSE)
 
 ## The `subset` argument
 
-Sometimes, we want to retaining the scale from all records, but display only a subset of data. This is enabled through the subset argument, which specifies the names
+Sometimes, we want to retain the scale from all records, but display only a subset of data. This is enabled through the subset argument, which specifies the names
 of groups to be displayed.
 
 ```{r}
