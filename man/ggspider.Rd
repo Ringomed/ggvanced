@@ -10,6 +10,7 @@ ggspider(
   ci_data = NULL,
   polygon = TRUE,
   scaled = FALSE,
+  real = FALSE,
   draw_axis = TRUE,
   n_labels = 5,
   subset = NULL,
@@ -39,6 +40,10 @@ right confidence interval borders, respectively. See the vignette for an example
 
 \item{scaled}{Whether to display a single axis with scaled data or
 individual axis (a radar or spider chart). Defaults to FALSE.}
+
+\item{real}{Whether to use the single scale for the entire input data and define the center circle
+as zero. Defaults to FALSE.
+If real is set to TRUE, central_distance is set to 0 and n_labels is set to 4.}
 
 \item{draw_axis}{Whether to draw variable axis or not. Defaults to TRUE.}
 
