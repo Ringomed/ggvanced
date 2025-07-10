@@ -66,6 +66,20 @@ ggspider(iris_summary, polygon = FALSE)
 <img src="https://github.com/Ringomed/ggvanced/assets/60142390/96069519-c062-4e8a-876a-98e082927a15" width="85%">
 </p>
 
+## The `zero_centered` argument
+
+In some cases, the spider chart might be more informative if the smallest displayd value on the axis was set to 0. In other words, everything will be centered on zero, so the information conveyed by the 
+spider chart will more closely resemble that of a bar chart. The below code and image shows a side-by-side comparison of the two output versions.
+
+```{r}
+ggvanced::ggspider(mtcars_summary, zero_centered = FALSE) # image A
+ggvanced::ggspider(mtcars_summary, zero_centered = TRUE) # image B
+```
+
+<p align="center">
+<img width="5100" height="2430" alt="2025_07_10_16_15_21 699438" src="https://github.com/user-attachments/assets/8fef1286-adee-451a-b0e0-a928285dbaed" />
+</p>
+
 ## The `subset` argument
 
 Sometimes, we want to retain the scale from all records, but display only a subset of data. This is enabled through the subset argument, which specifies the names
