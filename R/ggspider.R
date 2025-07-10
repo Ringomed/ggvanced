@@ -12,6 +12,7 @@
 #' individual axis (a radar or spider chart). Defaults to FALSE.
 #' @param draw_axis Whether to draw variable axis or not. Defaults to TRUE.
 #' @param n_labels How many labels to use per axis. Defaults to 5.
+#' @param zero_centered Whether to fix the smallest displayed value to 0 on each axis. Defaults to FALSE.
 #' @param subset Names of row identifiers to plot as a subset of data,
 #' but with axis range specified using the full dataset. Useful when trying to compare subsets of data.
 #' @param reorder_axis Names of features (columns) for which to reverse axis order from default min-max to max-min. Defaults to NULL.
@@ -71,6 +72,7 @@ ggspider <- function(p_data,
                      scaled = FALSE,
                      draw_axis = TRUE,
                      n_labels = 5,
+                     zero_centered = FALSE,
                      subset = NULL,
                      reorder_axis = NULL,
                      background_color = "gray99",
@@ -88,6 +90,11 @@ ggspider <- function(p_data,
   legend_title <- names(p_data)[[1]]
   p_data <- p_data %>% dplyr::rename(group = 1) %>% dplyr::mutate(group = factor(group))
 
+  if(zero_centered == TRUE){
+    zero_tibble <- as_tibble(as.list(setNames(rep(0, ncol(p_data)), names(p_data)))) %>% mutate(group = "zero_centered")
+    p_data <- p_data %>% bind_rows(zero_tibble)
+  }
+  
   if(!is.null(reorder_axis)){
     p_data <- p_data %>% dplyr::mutate(dplyr::across(dplyr::all_of(reorder_axis), ~ -.))
 
@@ -233,7 +240,13 @@ ggspider <- function(p_data,
     dplyr::mutate(coords = rescaled_coords(value + central_distance, ncol(p_data) - 1)) %>%
     tidyr::unnest(cols = c(coords))
 
-  rescaled_data <- if(is.null(subset))  rescaled_data else rescaled_data %>% filter(group %in% subset)
+  rescaled_data <- if(is.null(subset) & zero_centered == FALSE){
+    rescaled_data
+  } else if(is.null(subset) & zero_centered == TRUE) {
+    rescaled_data %>% filter(group != "zero_centered")
+  } else {
+      rescaled_data %>% filter(group %in% subset)
+  }
 
   step_1 +
     {if(draw_axis == TRUE) ggplot2::geom_line(data = axis_coords(ncol(p_data) - 1), ggplot2::aes(x, y, group = id), alpha = 0.3)} +
