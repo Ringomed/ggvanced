@@ -91,8 +91,8 @@ ggspider <- function(p_data,
   p_data <- p_data %>% dplyr::rename(group = 1) %>% dplyr::mutate(group = factor(group))
 
   if(zero_centered == TRUE){
-    zero_tibble <- as_tibble(as.list(setNames(rep(0, ncol(p_data)), names(p_data)))) %>% mutate(group = "zero_centered")
-    p_data <- p_data %>% bind_rows(zero_tibble)
+    zero_tibble <- tibble::as_tibble(as.list(setNames(rep(0, ncol(p_data)), names(p_data)))) %>% dplyr::mutate(group = "zero_centered")
+    p_data <- p_data %>% dplyr::bind_rows(zero_tibble)
   }
   
   if(!is.null(reorder_axis)){
@@ -243,9 +243,9 @@ ggspider <- function(p_data,
   rescaled_data <- if(is.null(subset) & zero_centered == FALSE){
     rescaled_data
   } else if(is.null(subset) & zero_centered == TRUE) {
-    rescaled_data %>% filter(group != "zero_centered")
+    rescaled_data %>% dplyr::filter(group != "zero_centered")
   } else {
-      rescaled_data %>% filter(group %in% subset)
+      rescaled_data %>% dplyr::filter(group %in% subset)
   }
 
   step_1 +
