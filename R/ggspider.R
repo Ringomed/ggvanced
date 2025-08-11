@@ -187,21 +187,21 @@ ggspider <- function(p_data,
 
   if(!is.null(ci_data)){
     pdata_long_rescaled <- ci_data %>%
-      select(group, parameter, y = min) %>%
-      mutate(measure = "min") %>%
-      bind_rows(ci_data %>%
-                   select(group, parameter, y = max) %>%
-                   mutate(measure = "max")) %>%
-      bind_rows(p_data %>%
+      dplyr::select(group, parameter, y = min) %>%
+      dplyr::mutate(measure = "min") %>%
+      dplyr::bind_rows(ci_data %>%
+                   dplyr::select(group, parameter, y = max) %>%
+                   dplyr::mutate(measure = "max")) %>%
+      dplyr::bind_rows(p_data %>%
                   tidyr::pivot_longer(-1, names_to = "parameter", values_to = "mean") %>%
-                  select(group, parameter, y = mean) %>%
-                  mutate(measure = "mean")) %>%
-      group_by(parameter) %>%
+                  dplyr::select(group, parameter, y = mean) %>%
+                  dplyr::mutate(measure = "mean")) %>%
+      dplyr::group_by(parameter) %>%
       dplyr::mutate(y = scales::rescale(y))
 
     rescaled_min <- pdata_long_rescaled %>% filter(measure == "min") %>%
-      select(-measure) %>%
-      pivot_wider(names_from = "parameter", values_from = "y") %>%
+      dplyr::select(-measure) %>%
+      tidyr::pivot_wider(names_from = "parameter", values_from = "y") %>%
       dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
       tidyr::pivot_longer(-group, names_to = "parameter", values_to = "value") %>%
       dplyr::group_by(group) %>%
@@ -210,8 +210,8 @@ ggspider <- function(p_data,
       dplyr::select(group, parameter, xmin = x, ymin = y)
 
     rescaled_max <- pdata_long_rescaled %>% filter(measure == "max") %>%
-      select(-measure) %>%
-      pivot_wider(names_from = "parameter", values_from = "y") %>%
+      dplyr::select(-measure) %>%
+      tidyr::pivot_wider(names_from = "parameter", values_from = "y") %>%
       dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
       tidyr::pivot_longer(-group, names_to = "parameter", values_to = "value") %>%
       dplyr::group_by(group) %>%
@@ -221,19 +221,19 @@ ggspider <- function(p_data,
 
     rescaled_ci <- rescaled_min %>% dplyr::left_join(rescaled_max, by = dplyr::join_by(group, parameter))
 
-    rescaled_ci_alt <- rescaled_min %>% rename(x = xmin, y = ymin) %>% dplyr::bind_rows(rescaled_max %>% rename(x = xmax, y = ymax))
+    rescaled_ci_alt <- rescaled_min %>% dplyr::rename(x = xmin, y = ymin) %>% dplyr::bind_rows(rescaled_max %>% dplyr::rename(x = xmax, y = ymax))
   }else{
     pdata_long_rescaled <- p_data %>%
                   tidyr::pivot_longer(-1, names_to = "parameter", values_to = "mean") %>%
-                  select(group, parameter, y = mean) %>%
-                  mutate(measure = "mean") %>%
-      group_by(parameter) %>%
+                  dplyr::select(group, parameter, y = mean) %>%
+                  dplyr::mutate(measure = "mean") %>%
+      dplyr::group_by(parameter) %>%
       dplyr::mutate(y = scales::rescale(y))
   }
 
-  rescaled_data <- pdata_long_rescaled %>% filter(measure == "mean") %>%
-    select(-measure) %>%
-    pivot_wider(names_from = "parameter", values_from = "y") %>%
+  rescaled_data <- pdata_long_rescaled %>% dplyr::filter(measure == "mean") %>%
+    dplyr::select(-measure) %>%
+    tidyr::pivot_wider(names_from = "parameter", values_from = "y") %>%
     dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
     tidyr::pivot_longer(-group, names_to = "parameter", values_to = "value") %>%
     dplyr::group_by(group) %>%
@@ -279,3 +279,4 @@ ggspider <- function(p_data,
                    legend.text = ggplot2::element_text(size = 12),
                    legend.title = ggplot2::element_text(size = 12))
 }
+
