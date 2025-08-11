@@ -199,7 +199,7 @@ ggspider <- function(p_data,
       dplyr::group_by(parameter) %>%
       dplyr::mutate(y = scales::rescale(y))
 
-    rescaled_min <- pdata_long_rescaled %>% filter(measure == "min") %>%
+    rescaled_min <- pdata_long_rescaled %>% dplyr::filter(measure == "min") %>%
       dplyr::select(-measure) %>%
       tidyr::pivot_wider(names_from = "parameter", values_from = "y") %>%
       dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
@@ -209,7 +209,7 @@ ggspider <- function(p_data,
       tidyr::unnest(cols = c(coords)) %>%
       dplyr::select(group, parameter, xmin = x, ymin = y)
 
-    rescaled_max <- pdata_long_rescaled %>% filter(measure == "max") %>%
+    rescaled_max <- pdata_long_rescaled %>% dplyr::filter(measure == "max") %>%
       dplyr::select(-measure) %>%
       tidyr::pivot_wider(names_from = "parameter", values_from = "y") %>%
       dplyr::mutate(copy = dplyr::pull(., 2)) %>% #da se moze geom_path spojiti opet na pocetnu tocku
@@ -279,4 +279,5 @@ ggspider <- function(p_data,
                    legend.text = ggplot2::element_text(size = 12),
                    legend.title = ggplot2::element_text(size = 12))
 }
+
 
